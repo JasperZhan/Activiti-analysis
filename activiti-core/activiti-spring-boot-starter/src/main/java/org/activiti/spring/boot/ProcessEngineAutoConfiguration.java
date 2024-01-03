@@ -89,7 +89,7 @@ public class ProcessEngineAutoConfiguration extends AbstractProcessEngineAutoCon
     @DependsOnDatabaseInitialization
     public SpringProcessEngineConfiguration springProcessEngineConfiguration(
             DataSource dataSource,
-            PlatformTransactionManager transactionManager,
+            PlatformTransactionManager transactionManager, // todo hj 了解一下这个
             SpringAsyncExecutor springAsyncExecutor,
             ActivitiProperties activitiProperties,
             ResourceFinder resourceFinder,

@@ -29,9 +29,8 @@ import org.activiti.engine.impl.persistence.deploy.ProcessDefinitionInfoCacheObj
 import java.util.*;
 
 /**
-
-
-
+ * 责任链上下文，使用栈的数据格式
+ * 既可以复用，也可以每一个拦截器都使用不同的上下文
  */
 public class Context {
 

@@ -355,6 +355,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
 
   // SERVICES /////////////////////////////////////////////////////////////////
 
+    // 各种 service 都存放在配置类里面
   protected RepositoryService repositoryService = new RepositoryServiceImpl();
   protected RuntimeService runtimeService = new RuntimeServiceImpl();
   protected HistoryService historyService = new HistoryServiceImpl(this);
@@ -859,10 +860,18 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   // buildProcessEngine
   // ///////////////////////////////////////////////////////
 
+    /**
+     * 构建流程引擎的核心逻辑
+     * 其他子类都是通过super.buildProcessEngine的方式
+     * @return
+     */
   @Override
   public ProcessEngine buildProcessEngine() {
+      // 对流程引擎配置的处理和填充
     init();
+    // 再通过配置构造引擎，引擎从配置中获取资源
     ProcessEngineImpl processEngine = new ProcessEngineImpl(this);
+    // 引擎初始化后置处理器
     postProcessEngineInitialisation();
 
     return processEngine;
@@ -871,6 +880,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   // init
   // /////////////////////////////////////////////////////////////////////
 
+    // 类似于spring的refresh，这里是构建流程引擎的核心逻辑
   public void init() {
     initConfigurators();
     configuratorsBeforeInit();
@@ -890,6 +900,8 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     initBusinessCalendarManager();
     initCommandContextFactory();
     initTransactionContextFactory();
+
+    //
     initCommandExecutors();
     initServices();
     initIdGenerator();
@@ -961,6 +973,7 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
       if (enableVerboseExecutionTreeLogging) {
         commandInvoker = new DebugCommandInvoker();
       } else {
+          // 命令模式调用者
         commandInvoker = new CommandInvoker();
       }
     }
@@ -969,13 +982,18 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
   public void initCommandInterceptors() {
     if (commandInterceptors == null) {
       commandInterceptors = new ArrayList<CommandInterceptor>();
+      // 自定义前置
       if (customPreCommandInterceptors != null) {
         commandInterceptors.addAll(customPreCommandInterceptors);
       }
+      // 默认拦截器集合
       commandInterceptors.addAll(getDefaultCommandInterceptors());
+      // 自定义后置
       if (customPostCommandInterceptors != null) {
         commandInterceptors.addAll(customPostCommandInterceptors);
       }
+      // 把命令调用者也封装成一个拦截器
+        // 把命令模式调用者做为责任链的最后一个，对命令进行调用
       commandInterceptors.add(commandInvoker);
     }
   }
@@ -1000,6 +1018,10 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     return interceptors;
   }
 
+    /**
+     * 初始化命令执行器
+     * 实际是把所有拦截器组装成责任链
+     */
   public void initCommandExecutor() {
     if (commandExecutor == null) {
       CommandInterceptor first = initInterceptorChain(commandInterceptors);
@@ -1031,6 +1053,10 @@ public abstract class ProcessEngineConfigurationImpl extends ProcessEngineConfig
     initService(dynamicBpmnService);
   }
 
+    /**
+     * 为服务设置命令执行器，也就是通过责任链执行
+     * @param service
+     */
   public void initService(Object service) {
     if (service instanceof ServiceImpl) {
       ((ServiceImpl) service).setCommandExecutor(commandExecutor);

@@ -23,8 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
-
-
+ * 命令上下文拦截器，负责初始化命令上下文和关闭
  */
 public class CommandContextInterceptor extends AbstractCommandInterceptor {
 
@@ -44,9 +43,11 @@ public class CommandContextInterceptor extends AbstractCommandInterceptor {
   public <T> T execute(CommandConfig config, Command<T> command) {
     CommandContext context = Context.getCommandContext();
 
+    // 记录上下文是否重用的标志，如果后面检查是false，说明没有重用之前的上下文，而是在这里创建的，要负责把它关闭
     boolean contextReused = false;
     // We need to check the exception, because the transaction can be in a
     // rollback state, and some other command is being fired to compensate (eg. decrementing job retries)
+      // 命令配置上下文不可重用 || 当前上下文为空 || 当前命令上下文发生过异常
     if (!config.isContextReusePossible() || context == null || context.getException() != null) {
       context = commandContextFactory.createCommandContext(command);
     } else {

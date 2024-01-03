@@ -30,6 +30,7 @@ public class CommandConfig {
   private TransactionPropagation propagation;
 
   public CommandConfig() {
+      // 默认上下文可重入
     this.contextReusePossible = true;
     this.propagation = TransactionPropagation.REQUIRED;
   }

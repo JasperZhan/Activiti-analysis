@@ -70,6 +70,7 @@ public abstract class AbstractProcessEngineAutoConfiguration
 
   @Bean
   public ProcessEngineFactoryBean processEngine(SpringProcessEngineConfiguration configuration) {
+      // 注入流程引擎的工厂bean，通过工厂bean构建流程引擎
     return super.springProcessEngineBean(configuration);
   }
 

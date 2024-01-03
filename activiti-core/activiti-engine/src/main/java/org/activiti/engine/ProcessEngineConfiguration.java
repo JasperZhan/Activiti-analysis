@@ -77,6 +77,9 @@ import org.activiti.engine.runtime.Clock;
  * </p>
  *
  * @see ProcessEngines
+ *
+ * 流程引擎配置的抽象父类，除了提供一些变量的setter、getter方法，以及几个按默认配置构建引擎配置的方法
+ * 主要提供构造流程引擎、和获取各种service的模板方法
 
  */
 public abstract class ProcessEngineConfiguration {
